@@ -4,8 +4,10 @@ import {
   TouchableNativeFeedback, TouchableOpacity, Platform
 } from 'react-native'
 import Colors from '../../constants/Colors';
+import Cart from '../../components/UI/Cart';
 
-const ProductItem = ({ product, onViewDetails, onOrder }) => {
+const ProductItem = ({ product, onSelect, children }) => {
+  console.log('product', product);
 
   let TouchableComponent = TouchableOpacity;
   if (Platform.OS === 'android' && Platform.Version >= 21) {
@@ -13,9 +15,10 @@ const ProductItem = ({ product, onViewDetails, onOrder }) => {
   }
 
   return (
-    <View style={styles.product}>
+
+    <Cart style={styles.product}>
       <View style={styles.touchable}>
-        <TouchableComponent onPress={onViewDetails} useForeground>
+        <TouchableComponent onPress={onSelect} useForeground>
           <View>
             <Image style={styles.image} source={{ uri: product.imageUrl }} />
             <View style={styles.details}>
@@ -23,26 +26,17 @@ const ProductItem = ({ product, onViewDetails, onOrder }) => {
               <Text style={styles.price}>${product.price.toFixed(2)}</Text>
             </View>
             <View style={styles.actions}>
-              <Button color={Colors.primary} title="View" onPress={onViewDetails} />
-              <Button color={Colors.primary} title="Order" onPress={onOrder} />
+              {children}
             </View>
           </View>
         </TouchableComponent>
       </View>
-    </View>
+    </Cart>
   )
 }
 
 const styles = StyleSheet.create({
   product: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    shadowColor: 'black',
-    shadowOffset: 0.26,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 8,
-    elevation: 5,
-
     height: 300,
     margin: 20,
   },
