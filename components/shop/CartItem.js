@@ -3,9 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../../constants/Colors';
 
-const CartItem = ({item, onRemove}) => {
-  console.log('CartItem-item', item);
- 
+const CartItem = ({ item, onRemove }) => {
   // return <View><Text>{item.title}-{item.price}</Text></View>;
   return (
     <View style={styles.cartItem}>

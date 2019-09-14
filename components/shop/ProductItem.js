@@ -7,8 +7,6 @@ import Colors from '../../constants/Colors';
 import Cart from '../../components/UI/Cart';
 
 const ProductItem = ({ product, onSelect, children }) => {
-  console.log('product', product);
-
   let TouchableComponent = TouchableOpacity;
   if (Platform.OS === 'android' && Platform.Version >= 21) {
     TouchableComponent = TouchableNativeFeedback;

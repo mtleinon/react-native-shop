@@ -7,8 +7,6 @@ import Cart from '../../components/UI/Cart';
 const OrderItem = ({ order }) => {
   const [showDetails, setShowDetails] = useState(false);
   const itemsArray = Object.entries(order.items).map(item => ({ id: item[0], ...item[1] }));
-  console.log('itemsArray', itemsArray);
-
   return (
     <Cart style={styles.orderItem}>
       <View style={styles.summary}>

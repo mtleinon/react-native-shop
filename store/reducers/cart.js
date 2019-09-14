@@ -9,7 +9,6 @@ const initialState = {
 };
 
 export default (state = initialState, action) => {
-  console.log('action', state, action);
 
   switch (action.type) {
     case ADD_TO_CART:
@@ -22,8 +21,6 @@ export default (state = initialState, action) => {
         quantity += state.items[id].quantity;
         sum += state.items[id].sum;
       }
-      console.log('ADD_TO_CART:', new CartItem(quantity, price, title, sum));
-
       return {
         ...state,
         items: {
