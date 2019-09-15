@@ -1,5 +1,5 @@
 import PRODUCTS from '../../data/dummy-data';
-import { DELETE_PRODUCT, UPDATE_PRODUCT, ADD_PRODUCT } from '../actions/products';
+import { DELETE_PRODUCT, UPDATE_PRODUCT, CREATE_PRODUCT, SET_PRODUCTS } from '../actions/products';
 
 const initialState = {
   availableProducts: PRODUCTS,
@@ -7,6 +7,8 @@ const initialState = {
 };
 
 export default (state = initialState, action) => {
+  console.log('reducer action', action);
+
   switch (action.type) {
     case DELETE_PRODUCT:
       return {
@@ -21,10 +23,15 @@ export default (state = initialState, action) => {
           product => product.id === action.product.id ? action.product : product),
       }
 
-    case ADD_PRODUCT:
+    case CREATE_PRODUCT:
       return {
         availableProducts: state.availableProducts.concat(action.product),
         userProducts: state.userProducts.concat(action.product),
+      }
+    case SET_PRODUCTS:
+      return {
+        availableProducts: action.products,
+        userProducts: action.products.filter(product => product.ownerId === 'u1')
       }
   }
   return state;

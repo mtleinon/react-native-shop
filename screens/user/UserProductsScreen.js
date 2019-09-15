@@ -1,5 +1,5 @@
-import React from 'react'
-import { View, Text, Button, FlatList, Alert, StyleSheet, Platform } from 'react-native'
+import React, { useState, useEffect, useCallback } from 'react'
+import { ActivityIndicator, View, Text, Button, FlatList, Alert, StyleSheet, Platform } from 'react-native'
 import { useSelector, useDispatch } from 'react-redux';
 import ProductItem from '../../components/shop/ProductItem';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
@@ -8,8 +8,11 @@ import Colors from '../../constants/Colors';
 import * as productActions from '../../store/actions/products';
 
 const UserProductsScreen = props => {
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
   const userProducts = useSelector(state => state.products.userProducts);
-  // const availableProducts = useSelector(state => state.products.availableProducts);
 
   const selectItem = (productId, productTitle) => {
     props.navigation.navigate(
@@ -21,6 +24,22 @@ const UserProductsScreen = props => {
 
   const dispatch = useDispatch();
 
+  const asyncDeleteHandler = async (productId) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      await dispatch(productActions.deleteProduct(productId));
+    } catch (err) {
+      setError('Product delete failed:' + err);
+    }
+    setIsLoading(false);
+  }
+
+  if (error) {
+    Alert.alert('An error ocurred!', error, [{ text: 'Ok' }]);
+    setError(null);
+  }
+
   const deleteHandler = (productId) => {
     Alert.alert('Are you sure?', 'Do you really want to delete this item?',
       [
@@ -28,10 +47,17 @@ const UserProductsScreen = props => {
         {
           text: 'Yes',
           style: 'destructive',
-          onPress: () => dispatch(productActions.deleteProduct(productId))
+          onPress: () => asyncDeleteHandler(productId)
         }
       ]);
   }
+
+  if (isLoading) {
+    return (<View style={styles.centered}>
+      <ActivityIndicator size="large" color={Colors.primary} />
+    </View >);
+  }
+
   return (
     <View>
       <FlatList data={userProducts}

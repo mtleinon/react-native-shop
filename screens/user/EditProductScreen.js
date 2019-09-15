@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useReducer } from 'react'
+import React, { useState, useCallback, useEffect, useReducer } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
-import { Alert, View, KeyboardAvoidingView, StyleSheet, Platform } from 'react-native'
+import { ActivityIndicator, Alert, Text, View, KeyboardAvoidingView, StyleSheet, Platform } from 'react-native'
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import HeaderButton from '../../components/UI/HeaderButton';
 import Colors from '../../constants/Colors'
@@ -23,6 +23,8 @@ const formReducer = (state, action) => {
 const EditProductsScreen = ({ navigation }) => {
   console.log('RENDER EditProductsScreen');
 
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const dispatch = useDispatch();
   const productId = navigation.getParam('productId');
@@ -56,29 +58,46 @@ const EditProductsScreen = ({ navigation }) => {
     });
   }, [dispatchFormState]);
 
-  const submitHandler = useCallback(() => {
+  const submitHandler = useCallback(async () => {
     if (!formState.formIsValid) {
       Alert.alert('Wrong input!', 'Please check the errors in the form',
         [{ text: 'Ok' }]);
       return;
     }
     const { title, imageUrl, description, price } = formState.inputValues;
-    if (editedProduct) {
-      dispatch(productsActions.updateProduct(
-        new Product(editedProduct.id, editedProduct.ownerId,
-          title, imageUrl, description, parseInt(price, 10))));
+    setIsLoading(true);
+    setError(null);
+    try {
+      if (editedProduct) {
+        await dispatch(productsActions.updateProduct(
+          new Product(editedProduct.id, editedProduct.ownerId,
+            title, imageUrl, description, parseInt(price, 10))));
+      } else {
+        await dispatch(productsActions.createProduct(
+          new Product('', 'u1',
+            title, imageUrl, description, parseInt(price, 10))));
+      }
+      setIsLoading(false);
+      navigation.goBack();
+    } catch (err) {
+      setError('Product update/add failed: ' + err)
     }
-    else {
-      dispatch(productsActions.addProduct(
-        new Product((new Date()).toString(), 'u1',
-          title, imageUrl, description, parseInt(price, 10))));
-    }
-    navigation.goBack();
   }, [dispatch, formState]);
 
   useEffect(() => {
     navigation.setParams({ submitHandler })
   }, [submitHandler]);
+
+  if (error) {
+    Alert.alert('An error ocurred!', error, [{ text: 'Ok' }]);
+    setError(null);
+    setIsLoading(false);
+  }
+  if (isLoading) {
+    return (<View style={styles.centered}>
+      <ActivityIndicator size="large" color={Colors.primary} />
+    </View >);
+  }
 
   return (
     <KeyboardAvoidingView
@@ -170,7 +189,13 @@ const styles = StyleSheet.create({
   },
   disabledInput: {
     backgroundColor: '#eee'
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
   }
+
 })
 
 export default EditProductsScreen

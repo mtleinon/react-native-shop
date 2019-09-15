@@ -10,7 +10,7 @@ const OrderItem = ({ order }) => {
   return (
     <Cart style={styles.orderItem}>
       <View style={styles.summary}>
-        <Text style={styles.totalAmount}>${order.totalAmount.toFixed(2)}</Text>
+        <Text style={styles.totalAmount}>${order.amount.toFixed(2)}</Text>
         <Text style={styles.date}>{order.readableDate}</Text>
       </View>
       <View style={styles.button}>
