@@ -18,23 +18,18 @@ const ProductsOverviewScreen = props => {
   const loadProducts = useCallback(async () => {
     setError(null);
     setIsRefreshing(true);
-    console.log('1');
     try {
       await dispatch(productActions.fetchProducts());
-      console.log('2');
     } catch (err) {
       setError(err);
-      console.log('3');
     }
     setIsRefreshing(false);
-    console.log('4');
   }, [dispatch, setIsLoading, setError]);
 
   useEffect(() => {
     setIsLoading(true);
     loadProducts().then(() =>
       setIsLoading(false));
-
   }, [dispatch]);
 
   // Add listener to load products newly when we navigate with drawer back

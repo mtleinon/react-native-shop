@@ -9,7 +9,6 @@ import Colors from '../../constants/Colors';
 const OrdersScreen = props => {
   const [isLoading, setIsLoading] = useState(false);
   const orders = useSelector(state => state.orders.orders);
-  console.log('RENDER OrdersScreen: ', orders);
 
   const dispatch = useDispatch();
 
@@ -31,6 +30,13 @@ const OrdersScreen = props => {
       <ActivityIndicator size="large" color={Colors.primary} />
     </View >
   }
+
+  if (!isLoading && orders.length === 0) {
+    return <View style={styles.centered}>
+      <Text>No orders found. Maybe start creating some!</Text>
+    </View >
+  }
+
   return (
     <FlatList
       data={orders}

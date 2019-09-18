@@ -21,7 +21,6 @@ const formReducer = (state, action) => {
 }
 
 const EditProductsScreen = ({ navigation }) => {
-  console.log('RENDER EditProductsScreen');
 
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -49,7 +48,7 @@ const EditProductsScreen = ({ navigation }) => {
   }
   );
 
-  onInputChange = useCallback((input, value, isValid) => {
+  const onInputChange = useCallback((input, value, isValid) => {
     dispatchFormState({
       type: FORM_INPUT_UPDATE,
       value,
@@ -70,11 +69,11 @@ const EditProductsScreen = ({ navigation }) => {
     try {
       if (editedProduct) {
         await dispatch(productsActions.updateProduct(
-          new Product(editedProduct.id, editedProduct.ownerId,
+          new Product(editedProduct.id, editedProduct.userId,
             title, imageUrl, description, parseInt(price, 10))));
       } else {
         await dispatch(productsActions.createProduct(
-          new Product('', 'u1',
+          new Product('', '',
             title, imageUrl, description, parseInt(price, 10))));
       }
       setIsLoading(false);

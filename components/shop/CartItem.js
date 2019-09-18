@@ -4,7 +4,6 @@ import { Ionicons } from '@expo/vector-icons';
 import Colors from '../../constants/Colors';
 
 const CartItem = ({ item, onRemove }) => {
-  // return <View><Text>{item.title}-{item.price}</Text></View>;
   return (
     <View style={styles.cartItem}>
       <View style={styles.countAndTitle}>

@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { ActivityIndicator, View, Text, Button, StyleSheet, FlatList } from 'react-native'
+import React, { useState, useEffect } from 'react'
+import { Alert, ActivityIndicator, View, Text, Button, StyleSheet, FlatList } from 'react-native'
 import { useSelector, useDispatch } from 'react-redux';
 import Colors from '../../constants/Colors';
 import CartItem from '../../components/shop/CartItem';
@@ -8,16 +8,32 @@ import * as orderActions from '../../store/actions/orders';
 import Cart from '../../components/UI/Cart';
 const CartScreen = props => {
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState();
+
   const cartTotalAmount = useSelector(state => state.cart.totalAmount);
   const items = useSelector(state => state.cart.items);
   const itemsArray = Object.entries(items).map(item => ({ id: item[0], ...item[1] }));
   const dispatch = useDispatch();
 
   const addOrder = async () => {
+    setError(null);
     setIsLoading(true);
-    await dispatch(orderActions.addOrder({ items, amount: cartTotalAmount }));
+    try {
+      await dispatch(orderActions.addOrder({ items, amount: cartTotalAmount }));
+    } catch (err) {
+      setError(err.message);
+    }
     setIsLoading(false);
   }
+
+  useEffect(() => {
+    if (error) {
+      Alert.alert('An error ocurred!', error, [{ text: 'Ok' }]);
+      setError(null);
+    }
+  }, [error]);
+
+
   return (
     <View style={styles.screen}>
       <Cart style={styles.summary}>
@@ -62,6 +78,12 @@ const styles = StyleSheet.create({
   },
   amount: {
     color: Colors.primary
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
   }
+
 })
 export default CartScreen

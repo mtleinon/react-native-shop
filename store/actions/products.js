@@ -4,14 +4,13 @@ export const CREATE_PRODUCT = 'CREATE_PRODUCT';
 export const SET_PRODUCTS = 'SET_PRODUCTS';
 
 export const deleteProduct = productId => {
-  console.log('deleteProduct', productId);
 
-  return async dispatch => {
+  return async (dispatch, getState) => {
+    const token = getState().auth.token;
 
-    const response = await fetch(`https://react-native-shop-874c4.firebaseio.com/products/${productId}.json`, {
+    const response = await fetch(`https://react-native-shop-874c4.firebaseio.com/products/${productId}.json?auth=${token}`, {
       method: 'DELETE',
     });
-    console.log('delete response', response);
     if (!response.ok) {
       throw new Error("fetch: product deletion from database failed");
     }
@@ -24,22 +23,22 @@ export const deleteProduct = productId => {
 }
 
 export const updateProduct = product => {
-  console.log('updateProduct', product);
 
-  return async dispatch => {
+  return async (dispatch, getState) => {
+    const token = getState().auth.token;
 
-    const response = await fetch(`https://react-native-shop-874c4.firebaseio.com/products/${product.id}.json`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        title: product.title,
-        description: product.description,
-        imageUrl: product.imageUrl
-      })
-    });
-    console.log('update response', response);
+    const response = await fetch(`https://react-native-shop-874c4.firebaseio.com/products/${product.id}.json?auth=${token}`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: product.title,
+          description: product.description,
+          imageUrl: product.imageUrl
+        })
+      });
     if (!response.ok) {
       throw new Error("fetch: Product update in database failed");
     }
@@ -51,30 +50,34 @@ export const updateProduct = product => {
 }
 
 export const createProduct = product => {
-  return async dispatch => {
+  return async (dispatch, getState) => {
+    const token = getState().auth.token;
+    const userId = getState().auth.userId;
 
-    const response = await fetch('https://react-native-shop-874c4.firebaseio.com/products.json', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(product)
-    });
-    console.log('create response', response);
+    const response = await fetch(`https://react-native-shop-874c4.firebaseio.com/products.json?auth=${token}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ...product, ownerId: userId })
+      });
     if (!response.ok) {
-      throw new Error("fetch: Product creation to database failed");
+      const errorData = await response.json();
+      throw new Error("fetch: Product creation to database failed:" +
+        errorData.error.message);
     }
     const resData = await response.json();
-    console.log('resData', resData);
     dispatch({
       type: CREATE_PRODUCT,
-      product: { ...product, id: resData.name }
+      product: { ...product, id: resData.name, ownerId: userId }
     });
   }
 }
 
 export const fetchProducts = () => {
-  return async dispatch => {
+  return async (dispatch, getState) => {
+    const userId = getState().auth.userId;
     try {
       const response = await fetch('https://react-native-shop-874c4.firebaseio.com/products.json');
       if (!response.ok) {
@@ -84,12 +87,13 @@ export const fetchProducts = () => {
       const products = data ?
         Object.entries(data).map(product => ({ ...product[1], id: product[0] })) :
         [];
+
       dispatch({
         type: SET_PRODUCTS,
-        products
+        products,
+        userProducts: products.filter(product => product.ownerId === userId)
       });
     } catch (err) {
-      console.log('fetchProducts: err =', err);
       throw err
     }
   }

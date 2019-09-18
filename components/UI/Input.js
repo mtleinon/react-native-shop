@@ -30,7 +30,6 @@ const Input = React.memo(props => {
     isValid: props.isValid,
     touched: false
   });
-  console.log('RENDER Input', inputState);
 
   const textChangeHandler = value => {
     const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -60,16 +59,12 @@ const Input = React.memo(props => {
 
   const { onInputChange, name } = props;
   useEffect(() => {
-    console.log('1');
 
     if (inputState.touched) {
-      console.log('2');
-
       onInputChange(name, inputState.value, inputState.isValid);
     }
   }, [inputState, onInputChange, name]);
 
-  console.log('RENDER return Input', inputState);
   return (
     <View style={styles.formInput}>
       <Text style={styles.label}>{props.label}</Text>

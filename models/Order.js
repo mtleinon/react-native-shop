@@ -8,14 +8,6 @@ class Order {
   };
 
   get readableDate() {
-    // return this.date.toLocaleDateString('en-EN',
-    //   {
-    //     year: 'numeric',
-    //     month: 'numeric',
-    //     day: 'numeric',
-    //     huor: '2-digit',
-    //     minute: '2-digit'
-    //   })
     return moment(this.date).format('MM/DD/YYYY, hh:mm');
   }
 }

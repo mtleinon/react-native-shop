@@ -7,8 +7,6 @@ const initialState = {
 };
 
 export default (state = initialState, action) => {
-  console.log('reducer action', action);
-
   switch (action.type) {
     case DELETE_PRODUCT:
       return {
@@ -31,7 +29,7 @@ export default (state = initialState, action) => {
     case SET_PRODUCTS:
       return {
         availableProducts: action.products,
-        userProducts: action.products.filter(product => product.ownerId === 'u1')
+        userProducts: action.userProducts
       }
   }
   return state;
